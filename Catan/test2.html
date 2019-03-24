@@ -1,0 +1,54 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>event.pageX demo</title>
+  <style>
+  body {
+    background-color: #eef;
+  }
+  div {
+    padding: 20px;
+  }
+  #log{
+  width:200px;
+  height:200px;
+  border:1px;
+  background-color:black;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+<body>
+ 
+<div id="log"></div>
+
+ <div id="log2"></div>
+
+<script>
+var x = document.getElementById("log");
+x.addEventListener('contextmenu',function(e){
+	e.preventDefault();
+	var x = e.pageX;
+	var y = e.pageY;
+
+}, false);
+
+$("#log").mousedown(function(ev){
+      if(ev.which == 3)
+      {
+          alert(ev.pageX);
+      }
+});
+/*document.addEventListener('contextmenu',function(e){
+	e.preventDefault();
+	var x = e.pageX;
+	var y = e.pageY;
+	  $( "#log2" ).text( "pageX: " + x + ", pageY: " + y );
+
+
+}, false);*/
+
+</script>
+ 
+</body>
+</html>

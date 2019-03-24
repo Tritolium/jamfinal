@@ -1,0 +1,221 @@
+<html class="">
+<head>
+
+<link rel="stylesheet" href="css/circle-menu.css">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+</head>
+<body>
+<img src="images/cube/wuerfel1.jpg" name="wuerfel">
+<img src="images/cube/wuerfel1.jpg" name="wuerfel2">
+<form>
+<input type="button" value="Würfeln!" onclick="throwdice()">
+</form> 
+
+
+<nav class="circular-menu" id="test">
+
+  <div class="circle">
+    <a href="" class="fa fa-turkish-lira fa-2x" style="left: 50%; top: 15%;"></a>
+    <a href="" class="fa-facebook" style="left: 74.7487%; top: 25.2513%;"></a>
+    <a href="" class="fa fa-twitter fa-2x" style="left: 85%; top: 50%;"></a>
+    <a href="" class="fa fa-linkedin fa-2x" style="left: 74.7487%; top: 74.7487%;"></a>
+    <a href="" class="fa fa-github fa-2x" style="left: 50%; top: 85%;"></a>
+    <a href="" class="fa fa-rss fa-2x" style="left: 25.2513%; top: 74.7487%;"></a>
+    <a href="" class="fa fa-pinterest fa-2x" style="left: 15%; top: 50%;"></a>
+    <a href="" class="fa fa-asterisk fa-2x" style="left: 25.2513%; top: 25.2513%;"></a>
+  </div>
+  
+  <a href="" class="menu-button fa fa-bars fa-2x" ></a>
+
+</nav>
+
+ <div id="log"></div>
+
+
+<script>
+var rightClick = false;
+document.addEventListener('contextmenu', function(ev) {
+    ev.preventDefault();
+    return false;
+}, false);
+$("#log").mousedown(function(ev){
+      if(ev.which == 3)
+      {
+   	ev.preventDefault();
+		var x = ev.pageX;
+		var y = ev.pageY;
+			var items = document.querySelectorAll('.circle a');
+for (var i = 0, l = items.length; i < l; i++) {
+    if (window.CP.shouldStopExecution(1)) {
+        break;
+    }
+    items[i].style.left = (50 - 35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + '%';
+    items[i].style.top = (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + '%';
+}
+window.CP.exitedLoop(1);
+var elementStyle = document.getElementById("test").style;
+
+elementStyle.left= x  -10;
+elementStyle.top= y  -110;
+elementStyle.position = "absolute";
+
+if(rightClick == false) {
+
+closeMenu(false);
+
+ rightClick = true; }
+
+     }
+else if(ev.which == 1){
+if(rightClick == true) {
+closeMenu(true);
+ rightClick = false; }
+}
+});
+
+function closeMenu(close){
+ var elementStyle = document.getElementById("test").style;
+if(close == true){
+ document.querySelector('.circle').classList.toggle('open'); 
+elementStyle.visibility = "hidden";}
+else{
+ document.querySelector('.circle').classList.toggle('open'); 
+ elementStyle.visibility = "visible";}
+}
+</script>
+<script>
+/*var x = document.getElementById("log");
+
+x.mousedown(function(ev){
+      if(ev.which == 3)
+      {
+      	e.preventDefault();
+		var x = ev.pageX;
+		var y = ev.pageY;
+		
+			var items = document.querySelectorAll('.circle a');
+for (var i = 0, l = items.length; i < l; i++) {
+    if (window.CP.shouldStopExecution(1)) {
+        break;
+    }
+    items[i].style.left = (50 - 35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + '%';
+    items[i].style.top = (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + '%';
+}
+window.CP.exitedLoop(1);
+var elementStyle = document.getElementById("test").style;
+
+elementStyle.left= x - 15 ;
+elementStyle.top= y -110 ;
+elementStyle.position = "absolute";
+
+
+ document.querySelector('.circle').classList.toggle('open');
+	      }
+});*/
+
+
+
+"use strict";
+"object" != typeof window.CP && (window.CP = {}), window.CP.PenTimer = {
+    programNoLongerBeingMonitored: !1,
+    timeOfFirstCallToShouldStopLoop: 0,
+    _loopExits: {},
+    _loopTimers: {},
+    START_MONITORING_AFTER: 2e3,
+    STOP_ALL_MONITORING_TIMEOUT: 5e3,
+    MAX_TIME_IN_LOOP_WO_EXIT: 2200,
+    exitedLoop: function(o) {
+        this._loopExits[o] = !0
+    },
+    shouldStopLoop: function(o) {
+        if (this.programKilledSoStopMonitoring)
+            return !0;
+        if (this.programNoLongerBeingMonitored)
+            return !1;
+        if (this._loopExits[o])
+            return !1;
+        var t = this._getTime();
+        if (0 === this.timeOfFirstCallToShouldStopLoop)
+            return this.timeOfFirstCallToShouldStopLoop = t, !1;
+        var i = t - this.timeOfFirstCallToShouldStopLoop;
+        if (i < this.START_MONITORING_AFTER)
+            return !1;
+        if (i > this.STOP_ALL_MONITORING_TIMEOUT)
+            return this.programNoLongerBeingMonitored = !0, !1;
+        try {
+            this._checkOnInfiniteLoop(o, t)
+        } catch (e) {
+            return this._sendErrorMessageToEditor(), this.programKilledSoStopMonitoring = !0, !0
+        }
+        return !1
+    },
+    _sendErrorMessageToEditor: function() {
+        try {
+            if (this._shouldPostMessage()) {
+                var o = {
+                    action: "infinite-loop",
+                    line: this._findAroundLineNumber()
+                };
+                parent.postMessage(JSON.stringify(o), "*")
+            } else
+                this._throwAnErrorToStopPen()
+        } catch (t) {
+            this._throwAnErrorToStopPen()
+        }
+    },
+    _shouldPostMessage: function() {
+        return document.location.href.match(/boomerang/)
+    },
+    _throwAnErrorToStopPen: function() {
+        throw "We found an infinite loop in your Pen. We've stopped the Pen from running. Please correct it or contact support@codepen.io."
+    },
+    _findAroundLineNumber: function() {
+        var o = new Error,
+            t = 0;
+        if (o.stack) {
+            var i = o.stack.match(/boomerang\S+:(\d+):\d+/);
+            i && (t = i[1])
+        }
+        return t
+    },
+    _checkOnInfiniteLoop: function(o, t) {
+        if (!this._loopTimers[o])
+            return this._loopTimers[o] = t, !1;
+        var i = t - this._loopTimers[o];
+        if (i > this.MAX_TIME_IN_LOOP_WO_EXIT)
+            throw "Infinite Loop found on loop: " + o
+    },
+    _getTime: function() {
+        return +new Date
+    }
+}, window.CP.shouldStopExecution = function(o) {
+    var t = window.CP.PenTimer.shouldStopLoop(o);
+    return t === !0 && console.warn("[CodePen]: An infinite loop (or a loop taking too long) was detected, so we stopped its execution. Sorry!"), t
+}, window.CP.exitedLoop = function(o) {
+    window.CP.PenTimer.exitedLoop(o)
+};
+
+</script>
+
+<script>
+
+var i;
+var face = new Array();
+for (i = 1; i < 7; i++) {
+    if (window.CP.shouldStopExecution(2)) {
+        break;
+    }
+    face[i] = new Image();
+    face[i].src = 'images/cube/wuerfel' + i + '.jpg';
+}
+window.CP.exitedLoop(2);
+function throwdice() {
+    var randomdice = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+    var randomdice2 = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+    document.images['wuerfel'].src = eval('face[' + randomdice + '].src');
+    document.images['wuerfel2'].src = eval('face[' + randomdice2 + '].src');
+}
+//# sourceURL=pen.js
+</script>
+</body></html>

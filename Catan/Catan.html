@@ -1,0 +1,320 @@
+<html>
+    <head>
+
+        <meta name="viewport" content=" initial-scale = 1.0,user-scalable=no">
+        <link rel="stylesheet" href="css/Catan.css">
+        <link rel="stylesheet" href="css/normalize.css">
+        <script type="text/javascript" src="javascript/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="javascript/interact.min.js"></script>
+        <script type="text/javascript" src="javascript/bpopup.min.js"></script>
+        <script type="text/javascript" src="javascript/js/tooltipster.bundle.min.js"></script>
+        <script type="text/javascript" src="javascript/Catan.js"></script>
+
+    </head>
+    <div class="game" id="Game">
+        <div id="fieldWrapper">
+            <div id="field">
+                <div class='row' id="row0">
+                    <div class='hexagon' id="waterField0"></div>
+                    <div class='hexagon' id="waterField1"></div>
+                    <div class='hexagon' id="waterField2"></div>
+                    <div class='hexagon' id="waterField3"></div>
+                </div>
+                <div class='row' id="row1">
+                    <div class='hexagon' id="waterField4"></div>
+                    <div class='hexagon' id="playField0"></div>
+                    <div class='hexagon' id="playField1"></div>
+                    <div class='hexagon' id="playField2"></div>
+                    <div class='hexagon' id="waterField5"></div>
+                </div>
+                <div class='row' id="row2">
+                    <div class='hexagon' id="waterField6"></div>
+                    <div class='hexagon' id="playField3"></div>
+                    <div class='hexagon' id="playField4"></div>
+                    <div class='hexagon' id="playField5"></div>
+                    <div class='hexagon' id="playField6"></div>
+                    <div class='hexagon' id="waterField7"></div>
+                </div>
+                <div class='row' id="row3">
+                    <div class='hexagon' id="waterField8"></div>
+                    <div class='hexagon' id="playField7"></div>
+                    <div class='hexagon' id="playField8"></div>
+                    <div class='hexagon' id="playField9"></div>
+                    <div class='hexagon' id="playField10"></div>
+                    <div class='hexagon' id="playField11"></div>
+                    <div class='hexagon' id="waterField9"></div>
+                </div>
+                <div class='row' id="row4">
+                    <div class='hexagon' id="waterField10"></div>
+                    <div class='hexagon' id="playField12"></div>
+                    <div class='hexagon' id="playField13"></div>
+                    <div class='hexagon' id="playField14"></div>
+                    <div class='hexagon' id="playField15"></div>
+                    <div class='hexagon' id="waterField11"></div>
+                </div>
+                <div class='row' id="row5">
+                    <div class='hexagon' id="waterField12"></div>
+                    <div class='hexagon' id="playField16"></div>
+                    <div class='hexagon' id="playField17"></div>
+                    <div class='hexagon' id="playField18"></div>
+                    <div class='hexagon' id="waterField13"></div>
+                </div>
+                <div class='row' id="row6">
+                    <div class='hexagon' id="waterField14"></div>
+                    <div class='hexagon' id="waterField15"></div>
+                    <div class='hexagon' id="waterField16"></div>
+                    <div class='hexagon' id="waterField17"></div>
+                </div>
+                <div class='StreetRow'>
+
+                    <div class='Intersection'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection' id="intersection3"></div>
+                    <div class='Street' id="street0"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection' id="intersection0"></div>
+                    <div class='Street' id="street1"></div>
+                    <div class='Intersection' id="intersection4"></div>
+                    <div class='Street' id="street2"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection' id="intersection1"></div>
+                    <div class='Street' id="street3"></div>
+                    <div class='Intersection' id="intersection5"></div>
+                    <div class='Street' id="street4"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection' id="intersection2"></div>
+                    <div class='Street' id="street5"></div>
+                    <div class='Intersection' id="intersection6"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Street'></div>
+                </div>
+                <div class='StreetRow'>
+                    <div class='Intersection'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection' id="intersection11"></div>
+                    <div class='Street' id="street10"></div>
+                    <div class='Street' id="street6"></div>
+                    <div class='Intersection' id="intersection7"></div>
+                    <div class='Street' id="street11"></div>
+                    <div class='Intersection' id="intersection12"></div>
+                    <div class='Street' id="street12"></div>
+                    <div class='Street' id="street7"></div>
+                    <div class='Intersection' id="intersection8"></div>
+                    <div class='Street' id="street13"></div>
+                    <div class='Intersection' id="intersection13"></div>
+                    <div class='Street' id="street14"></div>
+                    <div class='Street' id="street8"></div>
+                    <div class='Intersection' id="intersection9"></div>
+                    <div class='Street' id="street15"></div>
+                    <div class='Intersection' id="intersection14"></div>
+                    <div class='Street' id="street16"></div>
+                    <div class='Street' id="street9"></div>
+                    <div class='Intersection' id="intersection10"></div>
+                    <div class='Street' id="street17"></div>
+                    <div class='Intersection' id="intersection15"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Street'></div>
+
+                </div>
+                <div class='StreetRow'>
+                    <div class='Intersection'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection' id="intersection21"></div>
+                    <div class='Street' id="street23"></div>
+                    <div class='Street' id="street18"></div>
+                    <div class='Intersection' id="intersection16"></div>
+                    <div class='Street' id="street24"></div>
+                    <div class='Intersection' id="intersection22"></div>
+                    <div class='Street' id="street25"></div>
+                    <div class='Street' id="street19"></div>
+                    <div class='Intersection' id="intersection17"></div>
+                    <div class='Street' id="street26"></div>
+                    <div class='Intersection' id="intersection23"></div>
+                    <div class='Street' id="street27"></div>
+                    <div class='Street' id="street20"></div>
+                    <div class='Intersection' id="intersection18"></div>
+                    <div class='Street' id="street28"></div>
+                    <div class='Intersection' id="intersection24"></div>
+                    <div class='Street' id="street29"></div>
+                    <div class='Street' id="street21"></div>
+                    <div class='Intersection' id="intersection19"></div>
+                    <div class='Street' id="street30"></div>
+                    <div class='Intersection' id="intersection25"></div>
+                    <div class='Street' id="street31"></div>
+                    <div class='Street' id="street22"></div>
+                    <div class='Intersection' id="intersection20"></div>
+                    <div class='Street' id="street32"></div>
+                    <div class='Intersection' id="intersection26"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Street'></div>
+
+                </div>
+                <div class='StreetRow'>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Intersection'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Street' id="street33"></div>
+                    <div class='Intersection' id="intersection27"></div>
+                    <div class='Street' id="street39"></div>
+                    <div class='Intersection' id="intersection33"></div>
+                    <div class='Street' id="street40"></div>
+                    <div class='Street' id="street34"></div>
+                    <div class='Intersection' id="intersection28"></div>
+                    <div class='Street' id="street41"></div>
+                    <div class='Intersection' id="intersection34"></div>
+                    <div class='Street' id="street42"></div>
+                    <div class='Street' id="street35"></div>
+                    <div class='Intersection' id="intersection29"></div>
+                    <div class='Street' id="street43"></div>
+                    <div class='Intersection' id="intersection35"></div>
+                    <div class='Street' id="street44"></div>
+                    <div class='Street' id="street36"></div>
+                    <div class='Intersection' id="intersection30"></div>
+                    <div class='Street' id="street45"></div>
+                    <div class='Intersection' id="intersection36"></div>
+                    <div class='Street' id="street46"></div>
+                    <div class='Street' id="street37"></div>
+                    <div class='Intersection' id="intersection31"></div>
+                    <div class='Street' id="street47"></div>
+                    <div class='Intersection' id="intersection37"></div>
+                    <div class='Street' id="street48"></div>
+                    <div class='Street' id="street38"></div>
+                    <div class='Intersection' id="intersection32"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Street'></div>
+
+                </div>
+                <div class='StreetRow'>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Intersection'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Street' id="street49"></div>
+                    <div class='Intersection' id="intersection38"></div>
+                    <div class='Street' id="street54"></div>
+                    <div class='Intersection' id="intersection43"></div>
+                    <div class='Street' id="street55"></div>
+                    <div class='Street' id="street50"></div>
+                    <div class='Intersection' id="intersection39"></div>
+                    <div class='Street' id="street56"></div>
+                    <div class='Intersection' id="intersection44"></div>
+                    <div class='Street' id="street57"></div>
+                    <div class='Street' id="street51"></div>
+                    <div class='Intersection' id="intersection40"></div>
+                    <div class='Street' id="street58"></div>
+                    <div class='Intersection' id="intersection45"></div>
+                    <div class='Street' id="street59"></div>
+                    <div class='Street' id="street52"></div>
+                    <div class='Intersection' id="intersection41"></div>
+                    <div class='Street' id="street60"></div>
+                    <div class='Intersection' id="intersection46"></div>
+                    <div class='Street' id="street61"></div>
+                    <div class='Street' id="street53"></div>
+                    <div class='Intersection' id="intersection42"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Street'></div>
+
+                </div>
+                <div class='StreetRow'>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Intersection'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Street' id="street62"></div>
+                    <div class='Intersection' id="intersection47"></div>
+                    <div class='Street' id="street66"></div>
+                    <div class='Intersection' id="intersection51"></div>
+                    <div class='Street' id="street67"></div>
+                    <div class='Street' id="street63"></div>
+                    <div class='Intersection' id="intersection48"></div>
+                    <div class='Street' id="street68"></div>
+                    <div class='Intersection' id="intersection52"></div>
+                    <div class='Street' id="street69"></div>
+                    <div class='Street' id="street64"></div>
+                    <div class='Intersection' id="intersection49"></div>
+                    <div class='Street' id="street70"></div>
+                    <div class='Intersection' id="intersection53"></div>
+                    <div class='Street' id="street71"></div>
+                    <div class='Street' id="street65"></div>
+                    <div class='Intersection' id="intersection50"></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Street'></div>
+
+                </div>
+                <div class='StreetRow'>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Street' id="waterStreet"></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Intersection'></div>
+                    <div class='Street'></div>
+                    <div class='Street'></div>
+                </div>
+                <div class='portContainer'></div>
+                <div class='chipContainer'></div>
+                
+
+            </div>
+            <div class="player" id="player3"></div>
+            <div class="player" id="player2"></div>
+            <div class="player" id="player1"></div>
+            <div class="player" id="player0"></div>
+        </div>
+        <div id="console">
+            <div id="gelberBalken">asdasdasdds</div>
+        </div>
+        <div class="playerInfo">
+            <div id="dice0" class="info"></div>
+            <div id="dice1" class="info"></div>
+            <div id="endTurn" class="info tooltip" title="Klicke mich um deinen Zug zu beenden."></div>
+            <div class="info tooltip" id="wheat" title="Linksklick: Rohstoff anfordern Rechtsklick: Rohstoff anbieten"></div>
+            <div class="info tooltip" id="wood" title="Linksklick: Rohstoff anfordern Rechtsklick: Rohstoff anbieten"></div>
+            <div class="info tooltip" id="ore" title="Linksklick: Rohstoff anfordern Rechtsklick: Rohstoff anbieten"></div>
+            <div class="info tooltip" id="sheep" title="Linksklick: Rohstoff anfordern Rechtsklick: Rohstoff anbieten"></div>
+            <div class="info tooltip" id="clay" title="Linksklick: Rohstoff anfordern Rechtsklick: Rohstoff anbieten"></div>
+            <div class="info tooltip" id="trade" title="Klicke mich um einen Handel zu Starten."></div>
+            <div class="info tooltip" id="roadmaking" title="Klicke mich, wenn du eine Strassenbaukarte besitzt, um zwei kostenlose Strassen zu platzieren."></div>
+            <div class="info tooltip" id="monopol" title="Klicke mich, wenn du eine Monopolkarte besitzt, um die ausgewaehlte Ressource von allen Spielern zu erhalten."></div>
+            <div class="info tooltip" id="invention" title="Klicke mich, wenn du eine Erfindungskarte besitzt, um 2 Rohstoffe des ausgewaehlten Typs von der Bank zu erhalten."></div>
+            <div class="info tooltip" id="knight" title="Klicke mich, wenn du eine Ritterkarte besitzt, um einen Ritter auszuspielen."></div>
+            <div class="info tooltip" id="victory" title="Klicke mich, wenn du eine Siegpunktkarte besitzt, um einen Siegpunkt zu erhalten."></div>
+            <div class="info tooltip" id="buyProgress" title="Klicke mich um eine Fortschrittskarte zu kaufen"></div>
+
+
+
+
+        </div>
+                <nav class="circular-menu" id="circle_menue_intersection">
+            <div class="circle">
+                <a href="#" id="House" class="playerHouse_circle" style="left: 50%; top: 15%;"></a>
+                <a href="#" id="Settlement" class="playerSettlement_circle" style="left:76%; top: 56%;"></a>
+                <a href="#" id="Street" class="playerStreet_circle" style="left:76%; top: 56%;"></a>
+            </div>
+        </nav> 
+        <button type="button" id="btn_roll">Roll the dice to </button>
+        <div class="popup"><p></p><p class="popupMessage">Du bist dran!</p></div>
+
+
+    </div>
+
+</html>
