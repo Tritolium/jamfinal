@@ -3,7 +3,6 @@
  */
 package games.Catan;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import userManagement.User;
@@ -21,6 +20,11 @@ public class Player extends User {
 	
 	//manchmal geht zug beenden button nicht
 	//würfel zeigen nichts an!
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4578299629223494233L;
 
 	public Player(AI ai, Board board){
 		super(ai.getName(), null);
@@ -74,7 +78,7 @@ public class Player extends User {
 	private int free_roads = 0;
 	private int free_settlement = 0;
 	private int longestRoad = 0;
-	private String trade;
+	//private String trade;
 	
 	//0=3:1, 1=sheep, 2=clay, 3=ore, 4=wheat, 5=wood
 	private boolean[] harbor = new boolean[6];
@@ -292,7 +296,6 @@ public class Player extends User {
 	}
 
 	public String playMonopolcard(String ressource) throws MustOwnCardException {
-		System.out.println("in playmonopol");
 		if (monopolcards < 1) {
 			throw new MustOwnCardException();
 		}
@@ -300,7 +303,6 @@ public class Player extends User {
 		
 		monopolcards--;
 		int amount = 0;
-		System.out.println("entering switch");
 		switch (ressource) {
 		case "3":
 			resourceGotten = "Schafe";
@@ -353,9 +355,7 @@ public class Player extends User {
 			}
 			break;
 		}
-		System.out.println("leaving switch");
 		String res = getName() + " hat eine Monopolkarte gespielt und " + amount + " " + resourceGotten + " bekommen";
-		System.out.println("returning: " + res);
 		return res;
 		
 	}
@@ -414,28 +414,21 @@ public class Player extends User {
 
 		boolean nocon = true;
 		for (int i = 0; i < board.getRoads()[road].getCrossroads().length; i++) {
-			System.out.println("checking if crossroads are connected : " + i);
 			if (board.getRoads()[road].getCrossroads()[i].getOwner() == this) {
-				System.out.println("is connected : " + i);
 				nocon = false;
 			}
 			for (int j = 0; j < board.getRoads()[road].getCrossroads()[i].getRoads().length; j++) {
-				System.out.println("checking if the roads of those crossroads are connected");
 				if (board.getRoads()[road].getCrossroads()[i].getRoads()[j].getOwner() == this) {
-					System.out.println("is connected : " + j);
 					nocon = false;
 				}
 			}
 		}
 		if (nocon) {
-			System.out.println("not connected");
 			throw new NotConnectedException();
 		}
 
-		System.out.println("checking for second road");
 		// Second road, must be connected to the second city
 		if (roads == 14) {
-			System.out.println("is the second road");
 			Road r = board.getRoads()[road];
 			boolean settle2 = true;
 			boolean conSettle = false;
@@ -444,13 +437,11 @@ public class Player extends User {
 				// check if the Crossroads belong to the player
 				// one of the two belonging to the player (if both)
 				if (r.getCrossroads()[i].getOwner() != null && r.getCrossroads()[i].getOwner().equals(this)) {
-					System.out.println("player owns a city next to the road");
 					conSettle = true;
 					for (int j = 0; j < 3; j++) {
 						if (r.getCrossroads()[i].getRoads()[j] != null) {
 							if (r.getCrossroads()[i].getRoads()[j].getOwner() != null) {
 								settle2 = false;
-								System.out.println("not the second settlement");
 							}
 						}
 
@@ -459,21 +450,16 @@ public class Player extends User {
 			}
 			// Not the second city
 			if ((!settle2) || !conSettle) {
-				System.out.println("nocon in second settle");
 				throw new NotConnectedException();
 			}
-			System.out.println("guess it is the second settlement");
 		}
 
 		board.getRoads()[road].setOwner(this);
 		roads--;
-		System.out.println("built");
 		// resource Costs
 		if (free_roads > 0) {
 			free_roads--;
-			System.out.println("taking a free road");
 		} else {
-			System.out.println("taking resources");
 			clay--;
 			wood--;
 		}
@@ -484,7 +470,6 @@ public class Player extends User {
 	public String buildSettlement(int crossroad) throws PlayersPropertyException, NotConnectedException,
 			RessourceException, CityTooCloseException, WinnerException, NoFigureException {
 
-		System.out.println("in buildsettlement in player");
 		if (board.getCrossroads()[crossroad].getOwner() != null) {
 			throw new PlayersPropertyException();
 		}
@@ -550,25 +535,18 @@ public class Player extends User {
 			}
 			// if the crossroad's position is next to a harbor write the harbor in
 			// this.harbor
-			System.out.println("checking if the crossroad is a harbor");
 			if (cross.isHarbor()) {
 				harbor[0] = true;
-				System.out.println("is a harbor");
 			} else if (cross.isSheepHarbor()) {
 				harbor[1] = true;
-				System.out.println("is a sheepharbor");
 			} else if (cross.isClayHarbor()) {
 				harbor[2] = true;
-				System.out.println("is a clayharbor");
 			} else if (cross.isOreHarbor()) {
 				harbor[3] = true;
-				System.out.println("is a oreharbor");
 			} else if (cross.isWheatHarbor()) {
 				harbor[4] = true;
-				System.out.println("is a wheatharbor");
 			} else if (cross.isWoodHarbor()) {
 				harbor[5] = true;
-				System.out.println("is a woodharbor");
 			}
 			return "buildSettlement,accept," + crossroad;
 		}
@@ -597,9 +575,7 @@ public class Player extends User {
 
 		// if the crossroad's position is next to a harbor write the harbor in
 		// this.harbor
-		System.out.println("check for harbor");
 		if (cross.isHarbor()) {
-			System.out.println("is harbor");
 			harbor[0] = true;
 		} else if (cross.isSheepHarbor()) {
 			harbor[1] = true;
@@ -709,21 +685,16 @@ public class Player extends User {
 	}
 	
 	public void trade(String resourceGet, int get, String resourceGive, int give) throws RessourceException, OfferToPlayerException{
-		System.out.println("trade in player");
-		System.out.println(resourceGet+get+resourceGive+give);
 		switch(resourceGive){
 		case "sheep": 
 			if(sheep < give*(-1)){
 				throw new RessourceException();
 			}
-			System.out.println("checking all the players harbors");
-			for(int i = 0; i < harbor.length; i++){
-				System.out.println(i + " " + harbor[i]);
-			}
+			//for(int i = 0; i < harbor.length; i++){
+			//	System.out.println(i + " " + harbor[i]);
+			//}
 			if(harbor[1]){
-				System.out.println("has sheepharbor");
 				if(give*(-1) < 2*get || sheep < 2*get){
-					System.out.println("first return");
 					throw new OfferToPlayerException();
 				}
 				sheep -= 2*get;
@@ -742,9 +713,7 @@ public class Player extends User {
 					break;
 				}
 			}else if(harbor[0]){
-				System.out.println("has a normal harbor");
 				if(give*(-1) < 3*get || sheep < 3*get){
-					System.out.println("second return");
 					throw new OfferToPlayerException();
 				}
 				sheep -= 3*get;
@@ -764,7 +733,6 @@ public class Player extends User {
 				}
 			}else{
 				if(give *(-1)< 4*get || sheep < 4*get){
-					System.out.println("cant trade bank at all");
 					throw new OfferToPlayerException();
 				}
 				sheep -= 4*get;
@@ -1060,7 +1028,6 @@ public class Player extends User {
 	}//"wheat", "wood", "ore", "sheep", "clay"
 	
 	public void playerTrade(int wheat, int wood, int ore, int sheep, int clay, Player offer){
-		System.out.println("in playertrade");
 		this.wheat -= wheat;
 		offer.wheat += wheat;
 		this.wood -= wood;

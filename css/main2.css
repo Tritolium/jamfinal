@@ -71,14 +71,14 @@ body {
 #content{
 	opacity:1;
 	position:absolute; 
-	min-height:50%;	
-	width:790px;
+	height:35vw;	
+	min-width:90%;
 	color:#FFFFFF; 
 	padding-left:10px;
-	padding-right:-10px;
+	padding-right:10px;
 	padding-top:10px;
 	text-align:left;
-	left:18%;
+	left:0%;
 	top:140px;
 	z-index:2;
 }

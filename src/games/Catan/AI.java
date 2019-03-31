@@ -66,13 +66,13 @@ public class AI extends Player {
 		Crossroad firstTarget = null;
 		for (Crossroad c : crossarr) {
 			if (firstTarget == null && checkCrossroadNeighbour(c))
-				firstTarget = c;
+				firstTarget = c; // set initial crossroad
 			else {
 				if (calcResValue(firstTarget) < calcResValue(c) && checkCrossroadNeighbour(c)) {
-					firstTarget = c;
+					firstTarget = c; // replace by c, if c is more valuable
 				} else if (calcResValue(firstTarget) == calcResValue(c) && calcDiceValue(firstTarget) < calcDiceValue(c)
 						&& checkCrossroadNeighbour(c)) {
-					firstTarget = c;
+					firstTarget = c; // replace by c if values are the same, but chances of profit are higher
 				}
 			}
 		}
@@ -136,7 +136,7 @@ public class AI extends Player {
 	public void botturn() {
 		System.out.println("botturn start");
 		Crossroad[] crossarr = this.getBoard().getCrossroads();
-//		Crossroad a, b, d;
+		// Crossroad a, b, d;
 
 		if (tempRoadBuild == null || tempRoadBuild.getOwner() != null || checkCrossroadNeighbour(tempRoadBuild)) {
 			for (Crossroad c1 : crossarr) {
@@ -340,42 +340,71 @@ public class AI extends Player {
 			}
 		}
 
+		// try building settlement
+		System.out.println(this.getName() + ": Try to build Crossroad at " + tempRoadBuild.getId());
 		switch (found) {
 		case 2:
 			if (road1 == null && road2 == null && tempRoadBuild != null) {
-				this.trade("settlement");
-				this.execute("buildSettlement," + tempRoadBuild.getId());
+				this.trade("settlement"); // assure resources
+				this.execute("buildSettlement," + tempRoadBuild.getId()); // try building settlement
 				if (this.getBoard().getCrossroads()[tempRoadBuild.getId()].getOwner() != null) {
-					tempRoadBuild = null;
+					tempRoadBuild = null; // check for success
+					System.out.println("success");
 				}
 			}
 			break;
 		case 3:
 			if (road1 == null && road2 == null && road3 != null) {
-				this.trade("road");
-				this.execute("buildRoad," + road3.getId());
+				this.trade("road"); // assure resources
+				this.execute("buildRoad," + road3.getId()); // try building third road
 				if (this.getBoard().getCrossroads()[tempRoadBuild.getId()].getOwner() != null) {
-					road3 = null;
+					road3 = null; // check for success
 				}
 			}
 			if (road1 == null && road2 == null && road3 == null && tempRoadBuild != null) {
-				this.trade("settlement");
-				this.execute("buildSettlement," + tempRoadBuild.getId());
+				this.trade("settlement"); // assure resources
+				this.execute("buildSettlement," + tempRoadBuild.getId()); // try building settlement
 				if (this.getBoard().getCrossroads()[tempRoadBuild.getId()].getOwner() != null) {
-					tempRoadBuild = null;
+					tempRoadBuild = null; // check for success
+					System.out.println("success");
 				}
 			}
 			break;
 		}
-//		if (tempRoadBuild != null && (tempRoadBuild.getOwner() != null || checkCrossroadNeighbour(tempRoadBuild)
-//				|| (road1.getOwner() != null && !road1.getOwner().getName().equals(this.getName()))
-//				|| (road2.getOwner() != null && !road2.getOwner().getName().equals(this.getName()))
-//				|| (road3.getOwner() != null && !road3.getOwner().getName().equals(this.getName())))) {
-//			road1 = null;
-//			road2 = null;
-//			road3 = null;
-//			tempRoadBuild = null;
-//		}
+
+		// check, if target is still reachable
+		if (tempRoadBuild != null) {
+			boolean clearcache = false;
+			System.out.println(checkCrossroadNeighbour(tempRoadBuild));
+			if (tempRoadBuild.getOwner() != null || !checkCrossroadNeighbour(tempRoadBuild)) {
+				clearcache = true;
+			} else if (road1 != null && road1.getOwner() != null && !road1.getOwner().getName().equals(this.getName())) {
+				clearcache = true;
+			} else if (road2 != null && road2.getOwner() != null && !road2.getOwner().getName().equals(this.getName())) {
+				clearcache = true;
+			} else if (road3 != null && road3.getOwner() != null && !road3.getOwner().getName().equals(this.getName())) {
+				clearcache = true;
+			}
+
+			if (clearcache) {
+				System.out.println(this.getName() + ": Spot taken/unreachable. Clear Cache.");
+				road1 = null;
+				road2 = null;
+				road3 = null;
+				tempRoadBuild = null;
+			}
+		}
+		/*
+		if (tempRoadBuild != null && (tempRoadBuild.getOwner() != null || checkCrossroadNeighbour(tempRoadBuild)
+				|| (road1.getOwner() != null && !road1.getOwner().getName().equals(this.getName()))
+				|| (road2.getOwner() != null && !road2.getOwner().getName().equals(this.getName()))
+				|| (road3.getOwner() != null && !road3.getOwner().getName().equals(this.getName())))) {
+			road1 = null;
+			road2 = null;
+			road3 = null;
+			tempRoadBuild = null;
+			System.out.println("Spot taken/unreachable");
+		}*/
 
 		if (targetCity != null) {
 			this.trade("city");
@@ -709,20 +738,20 @@ public class AI extends Player {
 	 * available find the crossroad within two roads of a city with the highest
 	 * value ( available) and set road in that direction save the city
 	 * 
-	 * if AI has resources to build a settlement and has reached the city place
-	 * the city
+	 * if AI has resources to build a settlement and has reached the city place the
+	 * city
 	 * 
 	 * else, if AI has resources for a road, place that
 	 * 
-	 * else if AI has resources to place a city, place it on the settlement with
-	 * the highest value
+	 * else if AI has resources to place a city, place it on the settlement with the
+	 * highest value
 	 * 
-	 * if any of the above apply: reset a counter if none of the above apply
-	 * count up the counter by one
+	 * if any of the above apply: reset a counter if none of the above apply count
+	 * up the counter by one
 	 * 
-	 * if bot has 7 or more resources, but cannot build anything, trade
-	 * resources to one of the resources needed to: build a settlement if he
-	 * would have the other resourcs and has reached it, else, get resources
-	 * needed for a road, build it if possible
+	 * if bot has 7 or more resources, but cannot build anything, trade resources to
+	 * one of the resources needed to: build a settlement if he would have the other
+	 * resourcs and has reached it, else, get resources needed for a road, build it
+	 * if possible
 	 */
 }

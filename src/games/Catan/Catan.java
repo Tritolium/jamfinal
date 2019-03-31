@@ -152,7 +152,7 @@ public class Catan extends Game {
 				updateResources();
 				working = false;
 			} catch (NumberFormatException e) {
-				System.out.println("crossroad didn´t contain a number");
+				System.err.println("Crossroad did not contain a number");
 			} catch (PlayersPropertyException e) {
 				chat = 4 + e.getMessage();
 				sendDataToUser(user, "CHAT");
@@ -312,7 +312,7 @@ public class Catan extends Game {
 				updateCards();
 				working = false;
 			} catch (NumberFormatException e) {
-				System.out.println("thiefTile didn´t contain a number");
+				System.err.println("thiefTile didn't contain a number");
 			} catch (MustOwnCardException e) {
 				chat = 4 + e.getMessage();
 				sendDataToUser(user, "CHAT");
@@ -354,7 +354,7 @@ public class Catan extends Game {
 				updateCards();
 				working = false;
 			} catch (NumberFormatException e) {
-				System.out.println("road1 or road2 didn´t contain a number");
+				System.err.println("road1 or road2 didn't contain a number");
 			} catch (MustOwnCardException e) {
 				chat = 4 + e.getMessage();
 				sendDataToUser(user, "CHAT");
@@ -397,9 +397,9 @@ public class Catan extends Game {
 				updateThief();
 				updateResources();
 			} catch (NumberFormatException e) {
-				System.out.println("NFE in setthief");
+				System.err.println("NFE in setthief");
 			} catch (PlayerNotOnTileException e) {
-				System.out.println("setthief player not on tile");
+				System.err.println("setthief player not on tile");
 			}
 			working = false;
 		}
@@ -675,9 +675,9 @@ public class Catan extends Game {
 			gameData = chat;
 			if (chat.contains("/")) {
 				if (chat.contains("/tableflip")) {
-					return "4(╯°□°）╯︵ ┻━┻";
+					return "4(â•¯Â°â–¡Â°ï¼‰â•¯ï¸µ â”»â”�â”»";
 				} else if (chat.contains("/lenny")) {
-					return "4( ͡° ͜ʖ ͡°)";
+					return "4( Í¡Â° ÍœÊ– Í¡Â°)";
 				}
 			}
 
@@ -847,7 +847,7 @@ public class Catan extends Game {
 			turnCounter = 1;
 		} else {
 			if (turnCounter != 2) {
-				System.out.println("not second turn");
+				//System.out.println("not second turn");
 				if (turnCounter == 3 && !turn3) {
 					turn3 = true;
 				}
@@ -858,6 +858,7 @@ public class Catan extends Game {
 					}
 					if (getUserIndex(playerTurn) == 0) {
 						turnCounter++;
+						System.out.println("__________________________________________________________");
 						if (turnCounter == 2) {
 							for (Player p : pl) {
 								p.setFree_roads(1);
@@ -972,7 +973,7 @@ public class Catan extends Game {
 				return i;
 			}
 		}
-		System.out.println("user given to execute was not found in playerList");
+		System.err.println("user given to execute was not found in playerList");
 		return 4;
 	}
 	public int getUserIndex(String user) {
@@ -981,7 +982,7 @@ public class Catan extends Game {
 				return i;
 			}
 		}
-		System.out.println("user given to execute was not found in playerList");
+		System.err.println("user given to execute was not found in playerList");
 		return 4;
 	}
 
