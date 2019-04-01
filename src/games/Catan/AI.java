@@ -24,6 +24,9 @@ public class AI extends Player {
 	Road road1 = null;
 	Road road2 = null;
 	Road road3 = null;
+	boolean roadbuild1 = false;
+	boolean roadbuild2 = false;
+	boolean roadbuild3 = false;
 	// ArrayList<Crossroad> val0 = new ArrayList<Crossroad>();
 	// ArrayList<Crossroad> val1 = new ArrayList<Crossroad>();
 	// ArrayList<Crossroad> val2 = new ArrayList<Crossroad>();
@@ -134,184 +137,26 @@ public class AI extends Player {
 	}
 
 	public void botturn() {
-		System.out.println("botturn start");
-		Crossroad[] crossarr = this.getBoard().getCrossroads();
-		// Crossroad a, b, d;
+		System.out.println("botturn");
+		if (tempRoadBuild != null)
+			System.out.println(this.getName() + ": planning to build on " + tempRoadBuild.getId());
+		calcSettlement();
+		checkStatus();
 
-		if (tempRoadBuild == null || tempRoadBuild.getOwner() != null || checkCrossroadNeighbour(tempRoadBuild)) {
-			for (Crossroad c1 : crossarr) {
-				if (c1.getOwner() != null && c1.getOwner().getName().equals(this.getName())) {
-					for (Road r1 : c1.getRoads()) {
-						for (Crossroad c2 : r1.getCrossroads()) {
-							if (!c2.equals(c1)) {
-								for (Road r2 : c2.getRoads()) {
-									for (Crossroad c3 : r2.getCrossroads()) {
-										if (!c3.equals(c2)) {
-											if (checkCrossroadNeighbour(c3) && c3.getOwner() == null) {
-												if (allResources()) {
-													if (tempRoadBuild == null
-															|| calcDiceValue(tempRoadBuild) < calcDiceValue(c3)) {
-														tempRoadBuild = c3;
-														road1 = r1;
-														road2 = r2;
-														found = 2;
-													}
-												} else {
-													if (tempRoadBuild == null
-															|| calcResValue(tempRoadBuild) < calcResValue(c3)
-															|| (calcResValue(tempRoadBuild) == calcResValue(c3)
-																	&& calcDiceValue(tempRoadBuild) < calcDiceValue(
-																			c3))) {
-														tempRoadBuild = c3;
-														road1 = r1;
-														road2 = r2;
-														found = 2;
-													}
-												}
-											}
-											if (search >= 3) {
-												for (Road r3 : c3.getRoads()) {
-													for (Crossroad c4 : r3.getCrossroads()) {
-														if (!c4.equals(c3)) {
-															if (checkCrossroadNeighbour(c4) && c4.getOwner() == null) {
-																if (allResources()) {
-																	if (tempRoadBuild == null || calcDiceValue(
-																			tempRoadBuild) < calcDiceValue(c4)) {
-																		tempRoadBuild = c4;
-																		road1 = r1;
-																		road2 = r2;
-																		road3 = r3;
-																		found = 3;
-																	}
-																} else {
-																	if (tempRoadBuild == null
-																			|| calcResValue(
-																					tempRoadBuild) < calcResValue(c4)
-																			|| (calcResValue(
-																					tempRoadBuild) == calcResValue(c4)
-																					&& calcDiceValue(
-																							tempRoadBuild) < calcDiceValue(
-																									c4))) {
-																		tempRoadBuild = c4;
-																		road1 = r1;
-																		road2 = r2;
-																		road3 = r3;
-																		found = 3;
-																	}
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+		if (!roadbuild1 && road1 != null) {// if road is not build but one is planned
+			buildAIRoad(road1.getId());
 		}
-
-		// if (tempRoadBuild == null || tempRoadBuild.getOwner() != null ||
-		// checkCrossroadNeighbour(tempRoadBuild)) {
-		// for (Crossroad c : crossarr) {
-		// if (c.getOwner() != null &&
-		// c.getOwner().getName().equals(this.getName())) {
-		// for (int i = 0; i < 3; i++) {
-		// for (int j = 0; j < 2; j++) {
-		// if (!c.getRoads()[i].getCrossroads()[j].equals(c)) {
-		// a = c.getRoads()[i].getCrossroads()[j];
-		// for (int k = 0; k < 3; k++) {
-		// if (!a.getRoads()[k].equals(c.getRoads()[i])) {
-		// for (int l = 0; l < 2; l++) {
-		// if (!a.getRoads()[k].getCrossroads()[l].equals(a)) {
-		// b = a.getRoads()[k].getCrossroads()[l];
-		//
-		// if (checkCrossroadNeighbour(b) && b.getOwner() == null) {
-		// if (allResources()) {
-		//
-		// if (tempRoadBuild == null
-		// || calcDiceValue(tempRoadBuild) < calcDiceValue(b)) {
-		// tempRoadBuild = b;
-		// road1 = c.getRoads()[i];
-		// road2 = a.getRoads()[k];
-		// found = 2;
-		// }
-		//
-		// } else {
-		//
-		// if (tempRoadBuild == null
-		// || calcResValue(tempRoadBuild) < calcResValue(b)
-		// || (calcResValue(tempRoadBuild) == calcResValue(b)
-		// && calcDiceValue(tempRoadBuild) < calcDiceValue(
-		// b))) {
-		// tempRoadBuild = b;
-		// road1 = c.getRoads()[i];
-		// road2 = a.getRoads()[k];
-		// found = 2;
-		// }
-		// }
-		// }
-		//
-		// // search-depth 3:
-		//
-		// if (search >= 3) {
-		// for (int m = 0; m < 3; m++) {
-		// if (b.getRoads()[m] != null
-		// && !b.getRoads()[m].equals(a.getRoads()[k])) {
-		// for (int n = 0; n < 2; n++) {
-		// if (!b.getRoads()[m].getCrossroads()[n].equals(b)) {
-		// d = b.getRoads()[m].getCrossroads()[n];
-		// if (checkCrossroadNeighbour(d)
-		// && d.getOwner() == null) {
-		// if (allResources()) {
-		//
-		// if (tempRoadBuild == null || calcDiceValue(
-		// tempRoadBuild) < calcDiceValue(d)) {
-		// tempRoadBuild = d;
-		// road1 = c.getRoads()[i];
-		// road2 = a.getRoads()[k];
-		// road3 = b.getRoads()[m];
-		// found = 3;
-		// }
-		//
-		// } else {
-		//
-		// if (tempRoadBuild == null || calcResValue(
-		// tempRoadBuild) < calcResValue(d)
-		// || (calcResValue(
-		// tempRoadBuild) == calcResValue(
-		// d)
-		// && calcDiceValue(
-		// tempRoadBuild) < calcDiceValue(
-		// d))) {
-		// tempRoadBuild = d;
-		// road1 = c.getRoads()[i];
-		// road2 = a.getRoads()[k];
-		// road3 = b.getRoads()[m];
-		// found = 3;
-		// }
-		//
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-
+		if (roadbuild1 && !roadbuild2 && road2 != null) {// if road is not build but one is planned
+			buildAIRoad(road2.getId());
+		}
+		if (roadbuild2 && !roadbuild3 && road3 != null) {// if road is not build but one is planned
+			buildAIRoad(road3.getId());
+		}
+		if ((roadbuild2 && found == 2 || roadbuild3 && found == 3) && this.getSettlements() > 0) {
+			buildAISettlement(tempRoadBuild.getId());
+		}
+		// TODO build city
+		Crossroad[] crossarr = this.getBoard().getCrossroads();
 		if (targetCity == null) {
 			for (Crossroad c : crossarr) {
 				if (c.getOwner() != null && c.getOwner().getName().equals(this.getName()) && c.getBuild() == 1) {
@@ -325,93 +170,13 @@ public class AI extends Player {
 			}
 		}
 
-		if (road1 != null) {
-			this.trade("road");
-			this.execute("buildRoad," + road1.getId());
-			if (this.getBoard().getRoads()[road1.getId()].getOwner() != null) {
-				road1 = null;
-			}
-		}
-		if (road1 == null && road2 != null) {
-			this.trade("road");
-			this.execute("buildRoad," + road2.getId());
-			if (this.getBoard().getRoads()[road2.getId()].getOwner() != null) {
-				road2 = null;
-			}
-		}
-
-		// try building settlement
-		System.out.println(this.getName() + ": Try to build Crossroad at " + tempRoadBuild.getId());
-		switch (found) {
-		case 2:
-			if (road1 == null && road2 == null && tempRoadBuild != null) {
-				this.trade("settlement"); // assure resources
-				this.execute("buildSettlement," + tempRoadBuild.getId()); // try building settlement
-				if (this.getBoard().getCrossroads()[tempRoadBuild.getId()].getOwner() != null) {
-					tempRoadBuild = null; // check for success
-					System.out.println("success");
-				}
-			}
-			break;
-		case 3:
-			if (road1 == null && road2 == null && road3 != null) {
-				this.trade("road"); // assure resources
-				this.execute("buildRoad," + road3.getId()); // try building third road
-				if (this.getBoard().getCrossroads()[tempRoadBuild.getId()].getOwner() != null) {
-					road3 = null; // check for success
-				}
-			}
-			if (road1 == null && road2 == null && road3 == null && tempRoadBuild != null) {
-				this.trade("settlement"); // assure resources
-				this.execute("buildSettlement," + tempRoadBuild.getId()); // try building settlement
-				if (this.getBoard().getCrossroads()[tempRoadBuild.getId()].getOwner() != null) {
-					tempRoadBuild = null; // check for success
-					System.out.println("success");
-				}
-			}
-			break;
-		}
-
-		// check, if target is still reachable
-		if (tempRoadBuild != null) {
-			boolean clearcache = false;
-			System.out.println(checkCrossroadNeighbour(tempRoadBuild));
-			if (tempRoadBuild.getOwner() != null || !checkCrossroadNeighbour(tempRoadBuild)) {
-				clearcache = true;
-			} else if (road1 != null && road1.getOwner() != null && !road1.getOwner().getName().equals(this.getName())) {
-				clearcache = true;
-			} else if (road2 != null && road2.getOwner() != null && !road2.getOwner().getName().equals(this.getName())) {
-				clearcache = true;
-			} else if (road3 != null && road3.getOwner() != null && !road3.getOwner().getName().equals(this.getName())) {
-				clearcache = true;
-			}
-
-			if (clearcache) {
-				System.out.println(this.getName() + ": Spot taken/unreachable. Clear Cache.");
-				road1 = null;
-				road2 = null;
-				road3 = null;
-				tempRoadBuild = null;
-			}
-		}
-		/*
-		if (tempRoadBuild != null && (tempRoadBuild.getOwner() != null || checkCrossroadNeighbour(tempRoadBuild)
-				|| (road1.getOwner() != null && !road1.getOwner().getName().equals(this.getName()))
-				|| (road2.getOwner() != null && !road2.getOwner().getName().equals(this.getName()))
-				|| (road3.getOwner() != null && !road3.getOwner().getName().equals(this.getName())))) {
-			road1 = null;
-			road2 = null;
-			road3 = null;
-			tempRoadBuild = null;
-			System.out.println("Spot taken/unreachable");
-		}*/
-
 		if (targetCity != null) {
 			this.trade("city");
 			this.execute("buildCity," + targetCity.getId());
 			if (targetCity.getBuild() == 2)
 				targetCity = null;
 		}
+		System.out.println(this.getName() + ": planning to build on " + tempRoadBuild.getId());
 	}
 
 	private void trade(String reason) {
@@ -565,8 +330,7 @@ public class AI extends Player {
 	 * first two turns of the game, when the AI has to decide where to build the
 	 * first settlements. Most likely it blocks the best spaces.
 	 * 
-	 * @param crossarr
-	 *            the list of crossroads
+	 * @param crossarr the list of crossroads
 	 * @return the crossroad with maximum value
 	 */
 	private static int getMaxCrossroad(Crossroad[] crossarr) {
@@ -589,6 +353,11 @@ public class AI extends Player {
 		return max.getId();
 	}
 
+	/**
+	 * 
+	 * @param cross the Crossroad to check
+	 * @return True, if can be build, false otherwise
+	 */
 	private static boolean checkCrossroadNeighbour(Crossroad cross) {
 		// Checks if it's allowed to build on Crossroad cross
 		boolean passedTest = true;
@@ -615,6 +384,171 @@ public class AI extends Player {
 		}
 
 		return passedTest;
+	}
+	
+	private void buildAIRoad(int roadid) {
+		trade("road");
+		this.execute("buildRoad,"+roadid);
+		checkStatus();
+	}
+	
+	private void buildAISettlement(int settlementid) {
+		trade("settlement");
+		this.execute("buildSettlement," + settlementid);
+		checkStatus();
+	}
+
+	private void calcSettlement() {
+		Crossroad[] crossarr = this.getBoard().getCrossroads();
+		// Crossroad a, b, d;
+
+		if (tempRoadBuild == null || tempRoadBuild.getOwner() != null || !checkCrossroadNeighbour(tempRoadBuild)) {
+			for (Crossroad c1 : crossarr) {
+				if (c1.getOwner() != null && c1.getOwner().getName().equals(this.getName())) {
+					for (Road r1 : c1.getRoads()) {
+						if (r1.getOwner() == null || r1.getOwner().getName().equals(this.getName())) {
+							for (Crossroad c2 : r1.getCrossroads()) {
+								if (!c2.equals(c1)) {
+									for (Road r2 : c2.getRoads()) {
+										if (r2.getOwner() == null || r2.getOwner().getName().equals(this.getName())) {
+											for (Crossroad c3 : r2.getCrossroads()) {
+												if (!c3.equals(c2)) {
+													if (checkCrossroadNeighbour(c3) && c3.getOwner() == null) {
+														if (allResources()) {
+															if (tempRoadBuild == null || calcDiceValue(
+																	tempRoadBuild) < calcDiceValue(c3)) {
+																tempRoadBuild = c3;
+																road1 = r1;
+																road2 = r2;
+																found = 2;
+															}
+														} else {
+															if (tempRoadBuild == null
+																	|| calcResValue(tempRoadBuild) < calcResValue(c3)
+																	|| (calcResValue(tempRoadBuild) == calcResValue(c3)
+																			&& calcDiceValue(
+																					tempRoadBuild) < calcDiceValue(
+																							c3))) {
+																tempRoadBuild = c3;
+																road1 = r1;
+																road2 = r2;
+																found = 2;
+															}
+														}
+													}
+													if (search >= 3) {
+														for (Road r3 : c3.getRoads()) {
+															if (r3.getOwner() == null
+																	|| r3.getOwner().getName().equals(this.getName())) {
+																for (Crossroad c4 : r3.getCrossroads()) {
+																	if (!c4.equals(c3)) {
+																		if (checkCrossroadNeighbour(c4)
+																				&& c4.getOwner() == null) {
+																			if (allResources()) {
+																				if (tempRoadBuild == null
+																						|| calcDiceValue(
+																								tempRoadBuild) < calcDiceValue(
+																										c4)) {
+																					tempRoadBuild = c4;
+																					road1 = r1;
+																					road2 = r2;
+																					road3 = r3;
+																					found = 3;
+																				}
+																			} else {
+																				if (tempRoadBuild == null
+																						|| calcResValue(
+																								tempRoadBuild) < calcResValue(
+																										c4)
+																						|| (calcResValue(
+																								tempRoadBuild) == calcResValue(
+																										c4)
+																								&& calcDiceValue(
+																										tempRoadBuild) < calcDiceValue(
+																												c4))) {
+																					tempRoadBuild = c4;
+																					road1 = r1;
+																					road2 = r2;
+																					road3 = r3;
+																					found = 3;
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	private void checkStatus() {
+		// check availability and build progress
+
+		// check first road
+		if (road1 != null && !roadbuild1) { // skip test, when road is already owned by self
+			// check owner
+			if (road1.getOwner() != null) { // road is build upon
+				if (road1.getOwner().getName().equals(this.getName())) { // check if owner is self
+					roadbuild1 = true; // raise flag
+				} else {
+					clearCache(); // clear cache if road is build and not owned by self
+				}
+			}
+		}
+
+		// check second road
+		if (road2 != null && !roadbuild2) { // skip test, when road is already owned by self
+			// check owner
+			if (road2.getOwner() != null) { // road is build upon
+				if (road2.getOwner().getName().equals(this.getName())) { // check if owner is self
+					roadbuild2 = true; // raise flag
+				} else {
+					clearCache(); // clear cache if road is build and not owned by self
+				}
+			}
+		}
+
+		// check third road
+		if (road3 != null && !roadbuild3) { // skip test, when road is already owned by self or not planned
+			// check owner
+			if (road3.getOwner() != null) { // road is build upon
+				if (road3.getOwner().getName().equals(this.getName())) { // check if owner is self
+					roadbuild3 = true; // raise flag
+				} else {
+					clearCache(); // clear cache if road is build and not owned by self
+				}
+			}
+		}
+		
+		// check settlement
+		if(tempRoadBuild != null && tempRoadBuild.getOwner() != null || !checkCrossroadNeighbour(tempRoadBuild)) {
+			clearCache();
+		}
+	}
+
+	private void clearCache() {
+		road1 = null;
+		road2 = null;
+		road3 = null;
+		tempRoadBuild = null;
+		targetCity = null;
+
+		roadbuild1 = false;
+		roadbuild2 = false;
+		roadbuild3 = false;
+		calcSettlement();
 	}
 
 	private static String aiName() {
