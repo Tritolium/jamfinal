@@ -1,0 +1,337 @@
+ package website;
+
+import gameClasses.Game;
+import gameClasses.GameManager;
+import global.FileHelper;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import chat.GlobalChat;
+
+import dataStorage.Data;
+import server.Gui;
+import server.Server;
+
+/**
+ * Class containing the whole website html code, provides static methods to customize the appearance;
+ * automatically loads potential game data (html, css)
+ * 
+ * @author Marius Mueller
+ *
+ */
+public class Website {
+
+	static final String HTML_START =
+			"<html>" +
+			"<head>" + 
+			"<title>Server</title>" +
+			"</head>" +
+			"<body>";
+	static final String HTML_END =
+			"</body>" +
+			"</html>";
+	static final String SPACE = "&nbsp";
+	
+	
+	private static String toShow = null;
+	private static String chatCSS = null;
+	private static String gameCSS = null;
+	private static String gameJS = null;
+	private static String feedback = null;
+	private static String mainJS = "js/mainJS.js";
+	private static String mainCSS = "css/main2.css";
+	
+	/**
+	 * nullifies the content, blanks the content container
+	 */
+	public static void blankContent() {
+		toShow = null;
+	}
+	
+	/**
+	 * Assembles the html code of the website and returns it as a string
+	 * @param loggedIn
+	 * @param name
+	 * @param game
+	 * @return
+	 */
+	public static String getPage(boolean loggedIn, String name, boolean game, boolean globalChat, String context) {
+		StringBuffer page = new StringBuffer(
+				"<!DOCTYPE html>" +
+				"<html>" +
+				"<head>" + 
+				"<title>JAM Server</title>" +
+				"<style>");
+				
+				if(globalChat) {
+					setGlobalChat();
+					page.append(chatCSS);
+				}
+				
+				if(game)
+					page.append(gameCSS);
+					
+				try {
+					page.append(FileHelper.getFile(mainCSS));
+					page.append("</style>");
+					page.append("<script>");
+					page.append(FileHelper.getFile(mainJS));
+					page.append("</script>");
+				} catch (IOException e) {
+					System.err.println("Couldnt load main.css");
+				}
+				
+				if(game){
+					page.append(gameJS);
+				}
+				
+				page.append("<link rel=\"icon\" href=\"/img/favicon.png\" type=\"image/png\" />");
+				
+				page.append("</head>" +
+					"<body>"+
+					// head container
+					"<div id=\"head\"></div>" +
+					"<div id=\"top1\">" +
+					"<div id=\"logo\"></div>" +
+					"<div id=\"login\">");
+				if(!loggedIn) {
+					// no active session, show login and register links
+					page.append(
+							"<ul id=\"list\">" +
+							"<li><a href=\"/login\">LOGIN</a>"+ SPACE +"|" + SPACE + "<a href=\"/register\">REGISTER</a></li>" +
+							"</ul>"); 
+				} else {
+					// session found, show logout link
+					String logoutlink = "";
+					if(context.equals("")) {
+						logoutlink = "Hallo " + name + SPACE + SPACE + "|" + SPACE + SPACE + "<a href=\""+context+"logout\">LOGOUT</a>";
+					} else {
+						logoutlink = "Hallo " + name + SPACE + SPACE + "|" + SPACE + SPACE + "<a href=\"javascript:sendDataToServer('logout')\">LOGOUT</a>";
+					}
+					page.append(logoutlink);
+				}
+				page.append("</div></div>");	
+				
+				// menu tab
+				page.append("<div id=\"menu\">");
+				if(loggedIn) {
+					//if(UserManager.getInstance().getUserByName(name).getGameInstanceId() == 0 && !game)
+					if(!game) {
+						page.append("<ul id=\"list\">" +
+								"<li><a href=\"/\">HOME</a>" +
+								SPACE + SPACE + "|" + SPACE + SPACE +
+								"<a href=\"/create\">ERSTELLEN</a>" +
+								SPACE + SPACE + "|" + SPACE + SPACE +
+								"<a href=\"/join\">BEITRETEN</a>" 
+								/*
+								 * To do: Chat
+								 */
+								//SPACE + SPACE + "|" + SPACE + SPACE +
+								//"<a href=\"/chat\">GLOBAL CHAT</a>"
+							);
+					}
+					if(game) {
+						page.append("<ul id=\"list\">" +
+									"<li>"+
+									"<a href=\"javascript:sendDataToServer('quit')\">SPIEL VERLASSEN</a>");
+					}
+					page.append("</li></ul>");
+				}
+				page.append("</div>");
+				
+				page.append(
+					// content container
+					"<div id=\"main\"></div>"+
+					"<div id=\"content\">");
+				if(toShow != null) {
+					// there is something to view
+					if(feedback != null) {
+						// view error/success feedback
+						page.append("<div id=\"feedback\" align=\"center\">");
+						page.append(feedback);
+						page.append("</div>");
+						feedback = null;
+						page.append("<br><br><br>");
+					}
+					page.append(toShow);
+				}
+				page.append(
+				"</div>" +
+				HTML_END);
+		return page.toString();
+	}
+	
+	/**
+	 * @author Julian Hupertz, Marius Mueller
+	 * Method changes the toShow-string and fills it with links to prepared gameInstances
+	 */
+	public static void setCreate() {
+
+		toShow = "";
+		
+		ArrayList<String> gamesList;
+		
+			try {
+				gamesList = Data.getInstalledGames();
+				for (int i=0; i<gamesList.size();i++) {
+					
+					toShow += "<a href=\"/"+gamesList.get(i)+"/createGame/\">"+gamesList.get(i)+"</a><br>";
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+	}
+	
+	/**
+	 * Sets content to login form
+	 */
+	public static void setLogin() {
+		toShow = "<h2 align=\"center\">Login</h2>" +
+				"<form align=\"center\" action=\"index\" method=\"post\">" +
+				"	<p>" +
+				"	<table align=\"center\"><tr>" +
+				"		<th><label>Benutzername:</label></th>" +
+				"		<th><input type=\"text\" name=\"name\" /><th></tr>" +
+				"		<tr><th><label>Passwort:</label></th>" +
+				"		<th><input type=\"password\" name=\"password\" /></th>" +
+				"		<th><input type=\"submit\" value=\"login\" /></th></tr></table>" +
+				"	</p>" +
+				"</form>";
+	}
+	
+	/**
+	 * Sets content to register form
+	 */
+	public static void setRegister() {
+		toShow = "<h2 align=\"center\">Registrieren</h2>" +
+				"<form align=\"center\" action=\"login\" method=\"post\">" +
+				"	<p>" +
+				"	<table align=\"center\"><tr>" +
+				"		<th><label>Benutzername:</label></th>" +
+				"		<th><input type=\"text\" name=\"name\" /><th></tr>" +
+				"		<tr><th><label>Passwort:</label></th>" +
+				"		<th><input type=\"password\" name=\"password\" /></th>" +
+				"		<th><input type=\"submit\" value=\"registrieren\" /></th></tr></table>" +
+				"	</p>" +
+				"</form>";
+	}
+	
+	/**
+	 * Sets content to error page
+	 */
+	public static void setError(String error, String ref) {
+		toShow = "<h2 align=\"center\" style=\"color:red\">Error: " + error + "</h2>" +
+				"<p style=\"text-align:center;\"><a href=\"../" + ref + "\">Back</a></p>";
+	}
+	
+	/**
+	 * Shows error/success feedback above form
+	 * @param msg
+	 * @param error
+	 */
+	public static void setFeedback(String msg, boolean error) {
+		if(error) {
+			feedback = "<span align=\"center\" style=\"color:red;\">" +
+					"Error: " + msg + "<br>" + "</span>";
+		} else {
+			feedback = "<span align=\"center\" style=\"color:green;\">" +
+					"Success: " + msg + "<br>" + "</span>";
+		}
+	}
+	
+	/**
+	 * Sets content to welcome page 
+	 */
+	public static void setStart(String time) {	
+		// to do
+		toShow = "Herzlich Willkommen!<br><br>Server Version " + Gui.SERVER_VERSION + " // Release " + time;
+	}
+	
+	/**
+	 * Sets content to join view in order to show all running games
+	 */
+	public static void setJoin() {
+		String gameId = "SpielId";
+		String gameState = "Spielstatus";
+		String playersamount = "Spieleranzahl";
+		String gameName = "Spielname";
+		String gameCreator = "Ersteller";
+		String joinHead = "Teilnehmen";
+		
+		toShow = "<input type = \"button\" value=\"Aktualisieren\" onclick=\"window.location.reload(true)\">"+
+				 "<table border=\"1\"><caption style=\"caption-side:top\">Spielinstanzen</caption>"+
+				 "<tr><th>"+gameId+"</th><th>"+gameName+"</th><th>"+playersamount+
+				 "</th><th>"+gameState+"</th>"+"<th>"+gameCreator+"</th>"+"<th>"+
+				 joinHead+"</th>"+"</tr>";
+		
+		HashMap<Integer, Game> runningGamesList = null;
+		GameManager gm = GameManager.getInstance();
+		try {
+			runningGamesList = gm.getRunningGames();
+			
+			for (Iterator<Integer> it = runningGamesList.keySet().iterator(); it.hasNext();) {
+				int i = it.next();
+				if(runningGamesList.get(i).getGameState().toString().equals("CLOSED")) {
+					Server.server.removeContext(Server.gameContextMap.get(i));
+					Server.gameContextMap.remove(i);
+					Server.gameHandlerMap.remove(i);
+					it.remove();
+				}
+			}
+			for(int i : runningGamesList.keySet()) {
+				toShow+="<tr><td>" +runningGamesList.get(i).gameInstanceId+"</td>"+
+						"<td>"+runningGamesList.get(i).getClass().getSimpleName()+"</td>" +
+						"<td>"+runningGamesList.get(i).getCurrentPlayerAmount()+"/"+runningGamesList.get(i).getMaxPlayerAmount()+"</td>" +
+						"<td>"+runningGamesList.get(i).getGameState().toString()+"</td>"+
+						"<td>"+runningGamesList.get(i).getGameCreator().getName()+"</td>" +
+						"<td><input type =\"button\" onclick=\"window.location.href = '"+
+						server.Server.gameContextMap.get(i).getPath()+"';\" value=\"Join!\">"+"</td>"+
+						"</tr>";
+			}
+			toShow+="</table>";
+			if(runningGamesList.size()==0) {
+				toShow+="Es existieren keine laufenden Spielinstanzen.";
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sets content to global chat view
+	 */
+	public static void setGlobalChat() {
+		toShow = GlobalChat.getSite();
+		chatCSS = GlobalChat.getCSS();
+
+	}
+	
+	/**
+	 * Sets content to given string, general method
+	 * @param s
+	 */
+	public static void setContent(String s) {
+		toShow = s;
+	}
+	
+	/**
+	 * Sets content to specific game view in order to display a given game
+	 * @param g
+	 */
+	public static void setGamePage(Game g) {
+		toShow = g.getSite();
+		gameCSS = g.getCSS();
+		gameJS = g.getJavaScript();
+	}
+	
+}

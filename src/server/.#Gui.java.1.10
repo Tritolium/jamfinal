@@ -1,0 +1,200 @@
+package server;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+
+import javax.swing.*;
+
+import dataStorage.Data;
+
+
+/**
+ * 
+ * @author marius
+ *
+ */
+
+@SuppressWarnings("serial")
+public class Gui extends JFrame {
+
+	private JTextArea logtext;
+	private JScrollPane log;
+	private JButton btnShowAll;
+	private JButton btnShowSessions;
+	private JButton btnClearTextArea;
+	private JButton btnInstallGame;
+	private JButton btnShowInstalledGames;
+	private JLabel timer;
+	private int seconds;
+	
+	private static Gui instance;
+	
+	public static Gui getInstance() {
+		if(instance==null) {
+			instance = new Gui();
+		}
+		return instance;
+	}
+	
+	public Gui() {
+		super("Server");
+		Container pane = getContentPane();
+		pane.setLayout(null);
+		
+		seconds = 0;
+		
+		logtext = new JTextArea(5, 30);
+		log = new JScrollPane(logtext);
+		btnShowAll = new JButton("users");
+		btnShowSessions = new JButton("sessions");
+		btnClearTextArea = new JButton("clear");
+		btnInstallGame = new JButton("Install Game");
+		btnShowInstalledGames = new JButton("Show Installed Games");
+		timer = new JLabel("" + seconds);
+		
+		pane.add(log);
+		pane.add(btnShowAll);
+		pane.add(btnShowSessions);
+		pane.add(btnClearTextArea);
+		pane.add(btnInstallGame);
+		pane.add(btnShowInstalledGames);
+		pane.add(timer);
+		
+		log.setBounds(10, 10, 580, 450);
+		btnShowAll.setBounds(600, 10, 200, 40);
+		btnShowSessions.setBounds(600, 60, 200, 40);
+		btnClearTextArea.setBounds(600,110, 200,40);
+		btnInstallGame.setBounds(600, 160, 200, 40);
+		btnShowInstalledGames.setBounds(600,210,200,40);
+		timer.setBounds(600, 260, 120, 80);
+		
+		ActionListener timerTask = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				seconds++;
+				if(seconds > 60) {
+					int min = seconds/60;
+					int restSec = seconds - (min*60);
+					if(restSec < 10) {
+						timer.setText("Running: " + min + ":0" + restSec + " Min");
+					} else {
+						timer.setText("Running: " + min + ":" + restSec + " Min");
+					}
+				} else {
+					timer.setText("Running: " + seconds + " Sec");
+				}
+			}
+		};
+		new Timer(1000, timerTask).start();
+		
+		btnShowAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String s = UserManager.getInstance().showAllUser();
+				if(!s.isEmpty()) 
+					print("Registered users:\n"
+							+ s);
+				else 
+					print("ERROR, no users found");
+				}
+			}
+		);
+		
+		/**
+		 * @author Julian
+		 * Listener to clear the TextArea
+		 */
+		btnClearTextArea.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				logtext.setText("");
+				print("Running at " + Server.host + ":" + Server.port);
+			}
+		});
+		
+		/**
+		 * @author Julian
+		 * Listener to install a game
+		 */
+		btnInstallGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String s = null;
+				s = JOptionPane.showInputDialog("Enter the gamename");
+				try {
+					if(!(s==null)) {
+						Data.installGame(s);
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
+		btnShowInstalledGames.addActionListener(new ActionListener () {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String> gamesList;
+					try {
+						gamesList = Data.getInstalledGames();
+						for(int i=0;i<gamesList.size();i++) {
+							print(gamesList.get(i));
+						}
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+						print("Das System kann die angebgebene Datei nicht finden");
+					} catch (NullPointerException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+						print("Nicht erzeugtes Objekt");
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+						print("Fehler beim Einlesen der Datei");
+					}
+
+			}
+		});
+		
+		btnShowSessions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String s = SessionHandler.showSessions();
+				if(!s.isEmpty()) 
+					print("Logged in users:\n"
+							+ s);
+				else 
+					print("ERROR, no user logged in");
+				}
+			}
+		);
+		
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				try {
+					// serialize users
+					Data.saveUsers();
+				} catch(IOException io) {
+					io.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public void print(String s) {
+		Date date = new Date();		
+		String str = logtext.getText();
+		str = str + "[" + new Timestamp(date.getTime()) + "]    " +s;
+		logtext.setText(str + "\n");
+		
+		// scroll to bottom dynamically
+		JScrollBar vertical = log.getVerticalScrollBar();
+		vertical.setValue(vertical.getMaximum());
+	}
+	
+}

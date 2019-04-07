@@ -1,0 +1,81 @@
+package server;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.concurrent.Executors;
+
+import javax.swing.JFrame;
+
+
+//import GameClasses.GameManager;
+
+import com.sun.net.httpserver.*;
+
+public class Server extends Thread {
+	
+	public static String host;
+	public static int port = 8000;
+	public static HttpServer server;
+	public static int GLOBAL_ID = 1;
+	public static HashMap<Integer, GameHandler> gameHandlerMap = new HashMap<Integer, GameHandler>();
+	/*
+	public Server() {		
+		this.start();
+	}
+	
+	public void run() {
+		ServerSocket socket = null;
+		
+		try {
+			socket = new ServerSocket(port);
+		}
+		catch(Exception e) {
+			return;
+		}
+		
+		
+	}
+	*/
+	
+	public static void main (String [] args) throws IOException {
+		
+		//GameManager gm = GameManager.getInstance();
+		//Gui gui = new Gui();
+		Gui.getInstance().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Gui.getInstance().setLocationRelativeTo(null);
+		Gui.getInstance().setVisible(true);
+		Gui.getInstance().setSize(900, 500);
+		
+		InetAddress i = InetAddress.getLocalHost();
+		host = "http://" + i.getHostAddress();
+		
+		Server.server = HttpServer.create(new InetSocketAddress (port), 0);
+		//HttpServer server8001 = HttpServer.create(new InetSocketAddress (port+1),0);
+		
+		/** Added two Handler for testing SSEs
+		 * @author Julian Hupertz
+		 */
+		
+		//gm.createGame(GameClasses.GamesEnum.TESTGAME);
+		//server.createContext("/TicTacToe/", new GameHandler());
+		
+		server.createContext("/", new Handler());
+		server.createContext("/sse/", new ServerSentEventHandler());
+		//server.createContext("/sse/getData", sse);
+		server.createContext("/htmltestsite/js/", new JScriptHandler());
+
+		
+		
+		server.setExecutor(Executors.newCachedThreadPool());
+		
+		server.start();
+		
+		Gui.getInstance().print("Running at " + host + ":" + port);
+		Gui.getInstance().setTitle(Gui.getInstance().getTitle() + " - Running at " + host + ":" + port);
+		
+	}
+}
+
+

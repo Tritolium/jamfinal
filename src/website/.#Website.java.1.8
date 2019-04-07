@@ -1,0 +1,264 @@
+package website;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import dataStorage.Data;
+import server.GameHandler;
+import server.Server;
+
+/**
+ * 
+ * @author Marius Mueller
+ *
+ */
+
+public class Website {
+
+	static final String HTML_START =
+			"<html>" +
+			"<head>" + 
+			"<title>Server</title>" +
+			"</head>" +
+			"<body>";
+	static final String HTML_END =
+			"</body>" +
+			"</html>";
+	
+	private static String toShow = null;
+	
+	public static void blankContent() {
+		toShow = null;
+	}
+	
+	public static String getPage(boolean loggedIn, String name) {
+		StringBuffer page = new StringBuffer(
+				"<html>" +
+				"<head>" + 
+				"<title>Server</title>" +
+				"<style type=\"text/css\">" +
+				"body {background-color:#E6E6E6}" +
+				"a:link { font-weight:bold; color:black; text-decoration:none; }"+
+				"a:visited { font-weight:bold; color:black; text-decoration:none; }"+
+				"a:hover { font-weight:bold; color:#819FF7; text-decoration:cursive; }"+
+				"a:active { font-weight:bold; color:grey; text-decoration:underline; }"+
+				"</style>" +
+				//Anpassungen 07.07.13
+//				"<script>" +
+//				"function initializeGameInstance(d) {" +
+//					"xmlHttp = new XMLHttpRequest();" +
+//					"xmlHttp.open(\"GET\", \"/gameInstances/\" + \"?\" + d, true);" +
+//					"xmlHttp.send()" +
+//				"}" +
+					//ab hier wie vorher+ 
+				"</script>" +
+				"</head>" +
+					"<div style=\"" +
+						"background-color:#FFFFFF; " +
+						"position:absolute; " +
+						"left:20%; " +
+						"height:50px;" +
+						"width:800px;" +
+						"color:#000000;" +
+						"border:1px solid #819FF7;" +
+						"display:inline;\">");
+				if(!loggedIn) {
+					// no active session, show login and register links
+					page.append(
+							"<ul style=\"list-style-type:none; float:left; display:inline; \">" +
+							"<a href=\"../login\">Login</a>  |  <a href=\"../register\">Register</a></li>" +
+							"</ul>"); 
+				} else {
+					// session found, show logout link
+					page.append(
+							"Hallo " + name + "  |  <a href=\"../logout\">Logout</a>");
+				}
+				page.append(
+				"</div>" +
+					// content container
+					"<div style=\"" +
+						"background-color:#FFFFFF; " +
+						"position:absolute; " +
+						"left:20%; " +
+						"height:300px;" +
+						"top:65px;" +
+						"width:800px;" +
+						"color:#000000;" +
+						"border:1px solid #819FF7;" +
+						"a:link { font-weight:bold; color:black; text-decoration:none; }"+
+						"a:visited { font-weight:bold; color:black; text-decoration:none; }"+
+						"a:hover { font-weight:bold; color:#819FF7; text-decoration:cursive; }"+
+						"a:active { font-weight:bold; color:grey; text-decoration:underline; }\">" +
+						"</style>");
+				if(toShow != null) {
+					page.append(toShow);
+				}
+				page.append(
+				"</div>" +
+					// footer container		
+					"<div style=\"" +
+						"background-color:#FFFFFF; " +
+						"position:absolute; " +
+						"left:20%; " +
+						"height:20px;" +
+						"top:375px;" +
+						"width:800px;" +
+						"color:#000000;" +
+						"text-align:center;"+
+						"border:1px solid #819FF7;" +
+					"</style>" +
+					"<p style=\"text-align:center;\">Server Version 1.0</p>" +
+				HTML_END);
+		return page.toString();
+	}
+	
+	//author Marius, changed by Julian
+	/**
+	 * @author Julian, Maris
+	 * Method changes the to showString and fills it with links to prepared gameInstances
+	 */
+	public static void setStart() {
+		toShow = "";
+		
+		ArrayList<String> gamesList;
+		try {
+			gamesList = Data.getInstalledGames();
+				
+			for (int i=0; i<gamesList.size();i++) {
+					
+				toShow += "<a href=\"../"+Server.GLOBAL_ID+"/"+
+						  Class.forName("games."+gamesList.get(i)+"."+
+						  gamesList.get(i)).newInstance().getClass().getSimpleName()+
+						  "/"+Class.forName("games."+gamesList.get(i)+
+						  "."+gamesList.get(i)).newInstance().getClass().getSimpleName()+".html\">"+gamesList.get(i)+"</a><br>";
+					
+				GameHandler gameHandler = new GameHandler();
+				Server.server.createContext("/"+
+				Server.GLOBAL_ID+"/"+Class.forName("games."+gamesList.get(i)+"."+
+				gamesList.get(i)).newInstance().getClass().getSimpleName()+"/", gameHandler);
+					
+				Server.gameHandlerMap.put(Server.GLOBAL_ID, gameHandler);
+					
+				Server.GLOBAL_ID++;
+			}
+				
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		
+	}
+	
+	public static void setLogin() {
+		toShow = "<h2 align=\"center\">Login</h2>" +
+				"<form action=\"index\" method=\"post\">" +
+				"	<p>" +
+				"		<label>Benutzername:</label>" +
+				"		<input type=\"text\" name=\"name\" />" +
+				"		<label>Passwort:</label>" +
+				"		<input type=\"password\" name=\"password\" />" +
+				"		<input type=\"submit\" value=\"login\" />" +
+				"	</p>" +
+				"</form>";
+	}
+	
+	public static void setRegister() {
+		toShow = "<h2 align=\"center\">Registrieren</h2>" +
+				"<form action=\"login\" method=\"post\">" +
+				"	<p>" +
+				"		<label>Benutzername:</label>" +
+				"		<input type=\"text\" name=\"name\" />" +
+				"		<label>Passwort:</label>" +
+				"		<input type=\"password\" name=\"password\" />" +
+				"		<input type=\"submit\" value=\"registrieren\" />" +
+				"	</p>" +
+				"</form>";
+	}
+	
+	public static void setError(String error, String ref) {
+		toShow = "<h2 align=\"center\" style=\"color:red\">Error: " + error + "</h2>" +
+				"<p style=\"text-align:center;\"><a href=\"../" + ref + "\">Back</a></p>";
+	}
+	
+	/*
+	public static String getStartPage(String name) {
+		return HTML_START +
+				"<h1>Hallo " + name + "</h1>" +
+				"<form action=\"htmltestsite/\">" +
+				"	<p>" +
+				"		<input type=\"submit\" value=\"Start TestGame\" />" +
+				"	</p>" +
+				"</form>" +
+				"<br>" +
+				"<form action=\"TicTacToe/TicTacToe.html\">" +
+				"	<p>" +
+				"		<input type=\"submit\" value=\"Start TicTacToe\" />" +
+				"	</p>" +
+				"</form>" +
+				"<br>" +
+				"<form action=\"logout\">" +
+				"	<p>" +
+				"		<input type=\"submit\" value=\"logout\" />" +
+				"	</p>" +
+				"</form>" +
+				HTML_END;
+	}
+	
+	public static String getLoginPage() {
+		return HTML_START +
+				"<h1>Login</h1>" +
+				"<form action=\"index\" method=\"post\">" +
+				"	<p>" +
+				"		<label>Benutzername:</label>" +
+				"		<input type=\"text\" name=\"name\" />" +
+				"		<label>Passwort:</label>" +
+				"		<input type=\"password\" name=\"password\" />" +
+				"		<input type=\"submit\" value=\"login\" />" +
+				"	</p>" +
+				"</form>" +
+				HTML_END;
+	}
+	
+	public static String getRegisterPage(String s) {
+		return HTML_START +
+				"<h1>Registrieren " + s + "</h1>" +
+				"<form action=\"index\" method=\"post\">" +
+				"	<p>" +
+				"		<label>Benutzername:</label>" +
+				"		<input type=\"text\" name=\"name\" />" +
+				"		<label>Passwort:</label>" +
+				"		<input type=\"password\" name=\"password\" />" +
+				"		<input type=\"submit\" value=\"registrieren\" />" +
+				"	</p>" +
+				"</form>" +
+				HTML_END;
+	}
+	
+	public static String getErrorPage(String error) {
+		return HTML_START +
+				"<h1>Error: " + error + "</h1>" +
+				"<form action=\"index\">" +
+				"	<p>" +
+				"		<input type=\"submit\" value=\"back\" />" +
+				"	</p>" +
+				"</form>" +
+				HTML_END;
+	}
+	*/
+}

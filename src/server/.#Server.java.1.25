@@ -1,0 +1,81 @@
+package server;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
+
+import javax.swing.JFrame;
+
+import GameClasses.GameInstanceHandler;
+import GameClasses.GameManager;
+
+import com.sun.net.httpserver.*;
+
+public class Server extends Thread {
+	
+	public static String host;
+	private static int port = 8000;
+	public static HttpServer server;
+	/*
+	public Server() {		
+		this.start();
+	}
+	
+	public void run() {
+		ServerSocket socket = null;
+		
+		try {
+			socket = new ServerSocket(port);
+		}
+		catch(Exception e) {
+			return;
+		}
+		
+		
+	}
+	*/
+	
+	public static void main (String [] args) throws IOException {
+		
+		GameManager gm = GameManager.getInstance();
+		Gui gui = new Gui();
+		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		gui.setLocationRelativeTo(null);
+		gui.setVisible(true);
+		gui.setSize(750, 500);
+		
+		InetAddress i = InetAddress.getLocalHost();
+		host = "http://" + i.getHostAddress();
+		
+		Server.server = HttpServer.create(new InetSocketAddress (port), 0);
+		//HttpServer server8001 = HttpServer.create(new InetSocketAddress (port+1),0);
+		
+		/** Added two Handler for testing SSEs
+		 * @author Julian Hupertz
+		 */
+		
+		gm.createGame(GameClasses.GamesEnum.TESTGAME);
+		
+		server.createContext("/TicTacToe/", new GameHandler());
+		
+		server.createContext("/", new Handler(gui));
+		server.createContext("/sse/", new ServerSentEventHandler());
+		//server.createContext("/sse/getData", sse);
+		server.createContext("/htmltestsite/", new TestGameHandler());
+		server.createContext("/htmltestsite/js/", new JScriptHandler());
+		server.createContext("/htmltestsite/getData", new TestGameHandler());
+		server.createContext("/gameInstances/", new GameInstanceHandler());
+		
+		
+		server.setExecutor(Executors.newCachedThreadPool());
+		
+		server.start();
+		
+		gui.print("Running at " + host + ":" + port);
+		gui.setTitle(gui.getTitle() + " - Running at " + host + ":" + port);
+		
+	}
+}
+
+
